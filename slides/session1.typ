@@ -35,7 +35,11 @@ Misalignment issues hinder LLM-based agent's ability to complete decision-making
 - #link("https://github.com/chufanchen/read-paper-and-code/issues/222")[Training Language Models to Self-Correct via Reinforcement Learning]
 - #link("https://github.com/chufanchen/read-paper-and-code/issues/191")[Retroformer: Retrospective Large Language Agents with Policy Gradient Optimization]
 
-== Multi-turn RL for LLMs
+== RL for LLMs
+
+- Interactive Dialogue Agents via Reinforcement Learning on Hindsight Regenerations
+- AGILE: A Novel Reinforcement Learning Framework of LLM Agents
+- Training Large Language Models for Reasoning through Reverse Curriculum Reinforcement Learning
 
 Many of these problems require the agent to explicitly take the steps to gather information before making a decision. Single-turn RL for LLMs cannot learn such nuanced trategies as they attempt to solve the problem within a single step.
 
@@ -43,9 +47,6 @@ Multi-turn RL for LLMs can become sample inefficient in multi-step settings that
 
 - #link("https://github.com/chufanchen/read-paper-and-code/issues/193")[ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL]
 
-== Safety
-
-- #link("https://github.com/chufanchen/read-paper-and-code/issues/219")[RL, but don't do anything I wouldn't do]
 
 == LLM Reasoning via Planning
 
@@ -54,3 +55,23 @@ Multi-turn RL for LLMs can become sample inefficient in multi-step settings that
 - Reasoning with Language Model is Planning with World Model
 - #link("https://github.com/chufanchen/read-paper-and-code/issues/217")[Empowering LLM Agents with Zero-Shot Optimal Decision-Making through Q-learning]
 - #link("https://github.com/chufanchen/read-paper-and-code/issues/199")[Language Agent Tree Search Unifies Reasoning, Acting, and Planning in Language Models]
+
+== Speculative Decoding
+
+- #link("https://github.com/chufanchen/read-paper-and-code/issues/210")[Block Verification Accelerates Speculative Decoding]
+- #link("https://github.com/chufanchen/read-paper-and-code/issues/206")[SWIFT: On-the-Fly Self-Speculative Decoding for LLM Inference Acceleration]
+
+== Caching
+
+- #link("https://github.com/chufanchen/read-paper-and-code/issues/212")[Accelerating Diffusion Transformers with Token-wise Feature Caching]
+- #link("https://github.com/chufanchen/read-paper-and-code/issues/207")[FasterCache: Training-Free Video Diffusion Model Acceleration with High Quality]
+
+== KV Cache
+
+- #link("https://github.com/chufanchen/read-paper-and-code/issues/208")[VL-Cache: Sparsity and Modality-Aware KV Cache Compression for Vision-Language Model Inference Acceleration]
+- #link("https://github.com/chufanchen/read-paper-and-code/issues/213")[Model Tells You What to Discard: Adaptive KV Cache Compression for LLMs]
+
+== Sparse Attention
+
+- #link("https://github.com/chufanchen/read-paper-and-code/issues/209")[CoreInfer: Accelerating Large Language Model Inference with Semantics-Inspired Adaptive Sparse Activation]
+- #link("https://github.com/chufanchen/read-paper-and-code/issues/214")[MInference 1.0: Accelerating Pre-filling for Long-Context LLMs via Dynamic Sparse Attention]
