@@ -1,7 +1,7 @@
 #import "@preview/touying:0.5.3": *
-#import themes.simple: *
-
-#show: simple-theme.with(aspect-ratio: "16-9")
+#import themes.university: *
+#import "@preview/numbly:0.1.0": numbly
+#show: university-theme.with(aspect-ratio: "16-9")
 
 = 2025.1.3
 
@@ -75,9 +75,9 @@ Bias in value networks (used by PPO) impacts performance.
 
 - #link("https://github.com/chufanchen/read-paper-and-code/issues/216")[VinePPO: Unlocking RL Potential For LLM Reasoning Through Refined Credit Assignment]
 
+
+
 == Self Correction
-
-
 
 #link("https://github.com/chufanchen/read-paper-and-code/issues/222")[Training Language Models to Self-Correct via Reinforcement Learning]
 
@@ -95,29 +95,48 @@ c. Following the RLHF training procedures with PPO $r(x_(k,i),y_(k,i))=G_(k,i+1)
 
 == RL for LLMs
 
-Interactive Dialogue Agents via Reinforcement Learning on Hindsight Regenerations
+=== DigiRL: Training In-The-Wild Device-Control Agents with Autonomous Reinforcement Learning
 
-a. A hindsight controller $c_H$ that takes any completed dialogue as input, as well as a prefix of that dialogue, and proposes a different, more preferable action to take
+- Method: Offline RL + Offline-to-Online RL
 
-b. A forward model $hat(P)$ that simulates a hypothetical completed dialogue from any prefix
+=== #link("https://github.com/chufanchen/read-paper-and-code/issues/225")[WebRL: Training LLM Web Agents via Self-Evolving Online Curriculum Reinforcement Learning]
 
-c. A reward model $hat(r)$ to assign a reward for any completed dialogue
+- Method: ORM SFT Training + Curriculum RL
 
-d. An offline RL method for learning a policy from a static dataset of dialogues
+=== Fine-Tuning Large Vision-Language Models as Decision-Making Agents via Reinforcement Learning
+
+- Motivation: Instruction tunning VLM is not optimal for decision-making tasks.
+- Method: CoT and end-to-end RL training
+
+#figure(image("assets/vlm-0.jpg", height: 70%), caption: [Our method provides the VLM with a task description and then asks the model to output a CoT reasoning followed by a text action. Next, the text action will be parsed into an executable action to interact with the environment for task rewards and the next state.])
+#figure(image("assets/vlm-1.jpg", width: auto), caption: [Finally, we apply PPO to fine-tune the model with the task rewards.])
+
+=== Interactive Dialogue Agents via Reinforcement Learning on Hindsight Regenerations
+
+- Motivation: Pretrained LLMs can be served as effective "human simulators" to aid in the training of dialogue agents. However, the effectiveness of this approach(e.g. offline RL) is limited by the quality of the dialogue data used for training.
+- Method:
+  1. A hindsight controller $c_H$ that takes any completed dialogue as input, as well as a prefix of that dialogue, and proposes a different, more preferable action to take
+  2. A forward model $hat(P)$ that simulates a hypothetical completed dialogue from any prefix
+  3. A reward model $hat(r)$ to assign a reward for any completed dialogue
+  4. An offline RL method for learning a policy from a static dataset of dialogues
 
 #figure(image("assets/hindsight.png", height: 70%), caption: [Hindsight Generation.])
 
-- AGILE: A Novel Reinforcement Learning Framework of LLM Agents
+=== AGILE: A Novel Reinforcement Learning Framework of LLM Agents
+
+LLM Agents 被定义为一个 token-level MDP（Markov Decision Process）。动作空间（Action space）由 LLM 的词表构成，LLM 生成的每一个 token 是一个动作，LLM 本身则作为 Agent 的策略模型（Policy model）。Agent 的状态（State）由 LLM 上下文和记忆组成。在每个时刻，LLM 预测动作，执行器根据预定义的逻辑完成状态转移，同时环境给予 Agent 相应的奖励（Reward）。
+
+- Method: Imitation learning + Reinforcement learning + Seek for advice
 
 #figure(image("assets/AGILE.png", height: 70%), caption: [AGILE: A Framework unify LLM, memory, tools and executor.])
 
-- Training Large Language Models for Reasoning through Reverse Curriculum Reinforcement Learning
+=== Training Large Language Models for Reasoning through Reverse Curriculum Reinforcement Learning
 
 #figure(image("assets/R3.png", height: 70%), caption: [R3: Reverse Curriculum Reinforcement Learning.])
 
-- #link("https://github.com/chufanchen/read-paper-and-code/issues/225")[WebRL: Training LLM Web Agents via Self-Evolving Online Curriculum Reinforcement Learning]
+=== #link("https://github.com/chufanchen/read-paper-and-code/issues/217")[Empowering LLM Agents with Zero-Shot Optimal Decision-Making through Q-learning]
 
-- #link("https://github.com/chufanchen/read-paper-and-code/issues/217")[Empowering LLM Agents with Zero-Shot Optimal Decision-Making through Q-learning]
+- Method: Q-learning + LLM as world model and rollout using MCTS
 
 Many of these problems require the agent to explicitly take the steps to gather information before making a decision. *Single-turn* RL for LLMs cannot learn such nuanced strategies as they attempt to solve the problem within a single step.*Multi-turn* RL for LLMs can become sample inefficient in multi-step settings that require interaction with an external environment.
 
