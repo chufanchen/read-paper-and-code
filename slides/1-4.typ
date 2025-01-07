@@ -204,27 +204,44 @@ Method: Imitation learning + Reinforcement learning + Seek for advice
 
 === #link("https://github.com/chufanchen/read-paper-and-code/issues/217")[Empowering LLM Agents with Zero-Shot Optimal Decision-Making through Q-learning]
 
+#figure(image("assets/mlaq.png", height: 70%))
+
 - Method: Q-learning + LLM as world model and rollout using MCTS
+  1. MLAQ interacts with the environment through the Q-Planner, which is supported by the* domain-specific* memory that extracts a *task-specific* replay buffer for Q-Update
+  2. The environment provides a domain description for the agent, where the agent expands memory and replay buffer through LLM-based imaginary interactions
+
+=== #link("https://github.com/chufanchen/read-paper-and-code/issues/193")[ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL]
 
 Many of these problems require the agent to explicitly take the steps to gather information before making a decision. *Single-turn* RL for LLMs cannot learn such nuanced strategies as they attempt to solve the problem within a single step.*Multi-turn* RL for LLMs can become sample inefficient in multi-step settings that require interaction with an external environment.
 
 #figure(image("assets/multiturn.jpeg", height: 70%), caption: [Agents need multi-turn LLM fine-tuning.])
 
-=== #link("https://github.com/chufanchen/read-paper-and-code/issues/193")[ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL]
-
 - Motivation: token-level or utterance-level RL is not sufficient for complex tasks that require multi-turn reasoning.
-  - Token-level methods face the challenge of an extremely long horizon (number of tokens per round * number of interactions), leading to numerical instabilities and slow convergence
+  - Token-level methods face the challenge of an extremely long horizon (number of tokens per round $*$ number of interactions), leading to numerical instabilities and slow convergence
   - Utterance-level methods face the challenge of an exponential action space (exponential in the number of tokens per utterance), resulting in difficulty in optimizing over such large action space
 
 - Method: Hierarchical Multi-Turn RL
-  ArCHer for RL with language models can enjoy the best of both worlds, where an off-policy temporal difference learning method can train an utterance-level value function at the high level, and any policy gradient algorithm can optimize the token generation at each turn of the interaction at the low level, treating the high-level value function as the terminal reward for that turn. 
+
+  ArCHer for RL with language models can enjoy the best of both worlds, where an off-policy temporal difference learning method can train an *utterance-level value function* at the high level, and any policy gradient algorithm can optimize the token generation at each turn of the interaction at the low level, treating the high-level value function as the terminal reward for that turn. 
 
 #figure(image("assets/archer.jpeg", height: 70%), caption: [Actor-Critic Framework with a Hierarchical Structure.])
 == LLM Reasoning via Planning
 
-#figure(image("assets/RAP.png", height: 50%), caption: [Reasoning with Language Model is Planning with World Model.])
-
 === #link("https://github.com/chufanchen/read-paper-and-code/issues/199")[Language Agent Tree Search Unifies Reasoning, Acting, and Planning in Language Models]
+#figure(image("assets/RAP.png", height: 50%), caption: [RAP: Reasoning with Language Model is Planning with World Model.])
+
+#figure(image("assets/rap_0.png"), caption: [ToT vs RAP vs LATS])
+
+Method:
+- LLM作为代理（Agent）：LLM负责接收环境输入，生成行动，并接收环境反馈。
+- LLM作为价值函数（Value Function）：LLM被用来评估不同行动序列的价值，指导搜索算法的选择过程。
+- LLM作为优化器（Optimizer）：LLM被用来生成自我反思，帮助优化未来的决策。
+- 蒙特卡洛树搜索（MCTS）：MCTS算法用于在可能的行动空间中进行搜索，选择最有价值的行动序列。
+- 环境反馈：环境提供的反馈用于评估行动的价值，以及生成自我反思。
+- 自我反思：LLM生成的自我反思用于指导未来的搜索，帮助优化决策过程。
+
+
+
 
 // == Speculative Decoding
 
