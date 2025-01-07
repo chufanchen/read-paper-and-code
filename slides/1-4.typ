@@ -195,7 +195,7 @@ c. Following the RLHF training procedures with PPO $r(x_(k,i),y_(k,i))=G_(k,i+1)
 
 #figure(image("assets/AGILE.png", height: 70%), caption: [AGILE: A Framework unify LLM, memory, tools and executor.])
 
-Method: Imitation learning + Reinforcement learning + Seek for advice
+Method: Imitation learning -> Reinforcement learning + Seek for advice
 
 
 === Training Large Language Models for Reasoning through Reverse Curriculum Reinforcement Learning
