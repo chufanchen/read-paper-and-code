@@ -1,6 +1,7 @@
 #import "@preview/touying:0.5.3": *
 #import themes.university: *
 #import "@preview/numbly:0.1.0": numbly
+#import "@preview/mitex:0.2.4": *
 #show: university-theme.with(aspect-ratio: "16-9")
 
 = 2025.1.3
@@ -56,34 +57,81 @@ b. iteratively self-align the reward function $R_theta$ using ranking-based pref
 
 3. Directly training LLMs as the behavior polices with RL algorithms
 4. Skill Learning with LLMs
-- #link("https://github.com/chufanchen/read-paper-and-code/issues/196")[Language-guided Skill Learning with Temporal Variational Inference]
-5. Enhance state representation with LLMs
-- #link("https://github.com/chufanchen/read-paper-and-code/issues/197")[LLM-Empowered State Representation for Reinforcement Learning]
+=== #link("https://github.com/chufanchen/read-paper-and-code/issues/196")[Language-guided Skill Learning with Temporal Variational Inference]
 
-6. Guiding Pretraining in Reinforcement Learning with Large Language Models
+Methods:  
+  1. Given a dataset of expert demonstrations, we query an LLM (only using the goal and actions as input) for an initial segmentation and a language description for each segment.
+  2. Temporal variational inference takes in multi-modal data as input to improve upon the segmentation by merging different subsequences into skills.
+  3. Online hierarchical RL on new tasks leveraging the learned skills which can greatly shorten the task horizon and help the agent efficiently learn on new tasks
+
+#figure(image("assets/LAST.png"))
+
+5. Enhance state representation with LLMs
+=== #link("https://github.com/chufanchen/read-paper-and-code/issues/197")[LLM-Empowered State Representation for Reinforcement Learning]
+Method: 
+  1. LLM is prompted to generate codes for state representation and intrinsic reward functions.
+  2. $K$ state representations and intrinsic rewards ${F_k}^K_(k=1)$, ${G_k}^K_(k=1)$ are sampled from LLM.
+  3. During RL training, function $F$ and $G$ are utilized to generate $s^r = F(s)$ for state representations, and $r^i = G(s, s^r)$ for intrinsic rewards.
+  4. Finally, Lipschitz constants and episode returns of each candidate serve as feedback metrics for LLM.
+
+#figure(image("assets/LESR.png", height: 70%))
 
 == Credit Assignment
+
+- #link("https://github.com/chufanchen/read-paper-and-code/issues/224")[Reinforcing LLM Agents via Policy Optimization with Action Decomposition]
 
 RL agents where sampling actions from a policy means sampling a sequence of tokens mapping to an action from a (suitably conditioned) large language model. Since actions are typically described as a sequence of more than one token, this introduces issues around *credit assignment* between tokens contributing to an action.
 
 #figure(image("assets/POAD.png", height: 50%), caption: [#text(size: 20pt)[The necessity of aligning language agents with environments to
 exclude the wrong option, since the agent does not initially know that “coffee table is empty”; Action-level optimization is uncertain to what extent the key tokens]])
 
-- #link("https://github.com/chufanchen/read-paper-and-code/issues/224")[Reinforcing LLM Agents via Policy Optimization with Action Decomposition]
+#mitex(`
+\begin{aligned}
+& Q_\pi\left(o_t, w_t^{1: j-1}, w_t^j\right) \leftarrow\left\{\begin{array}{ll}
+0+\gamma_w \max _{w_t^{j+1}} Q_\pi\left(o_t, w_t^{1: j}, w_t^{j+1}\right), & \text { if } j<\left|a_t\right| \\
+R\left(o_t, a_t\right)+\gamma_a \max _{w_{t+1}^1} Q_\pi\left(o_{t+1}, w_{t+1}^1\right), & \text { if } j=\left|a_t\right|
+\end{array},\right. \\
+& V_\pi\left(o_t, w_t^{1: j}\right) \leftarrow \begin{cases}0+\gamma_w V_\pi\left(o_t, w_t^{1: j+1}\right), & \text { if } j<\left|a_t\right| \\
+R\left(o_t, a_t\right)+\gamma_a V_\pi\left(o_{t+1}, \emptyset\right), & \text { if } j=\left|a_t\right|\end{cases}
+\end{aligned}
+`)
+
+
+
 
 Bias in value networks (used by PPO) impacts performance.
 
-- #link("https://github.com/chufanchen/read-paper-and-code/issues/216")[VinePPO: Unlocking RL Potential For LLM Reasoning Through Refined Credit Assignment]
+=== #link("https://github.com/chufanchen/read-paper-and-code/issues/216")[VinePPO: Unlocking RL Potential For LLM Reasoning Through Refined Credit Assignment]
 
+#mitex(`
+\hat{V}_{\mathrm{MC}}\left(s_t\right):=\frac{1}{K} \sum_{k=1}^K R\left(\tau^k\right), \quad \text { where } \tau^1, \ldots, \tau^K \sim \pi_\theta\left(\cdot \mid s_t\right) .
+`)
 
 
 == Self Correction
 
-#link("https://github.com/chufanchen/read-paper-and-code/issues/222")[Training Language Models to Self-Correct via Reinforcement Learning]
+=== #link("https://github.com/chufanchen/read-paper-and-code/issues/222")[Training Language Models to Self-Correct via Reinforcement Learning]
 
 #figure(image("assets/Score.png", height: 50%), caption: [SCoRe: Two-stage RLHF.])
 
-#link("https://github.com/chufanchen/read-paper-and-code/issues/191")[Retroformer: Retrospective Large Language Agents with Policy Gradient Optimization]
+Single Turn:
+
+#mitex(`
+\max _\theta \mathbb{E}_{x_t, y_t \sim \pi_\theta\left(\cdot \mid x_t\right)}\left[\hat{r}\left(y_t, y^*\right)-\beta_1 D_{K L}\left(\pi_\theta\left(\cdot \mid x_t\right)| | \pi_{\mathrm{ref}}\left(\cdot \mid x_t\right)\right)\right],
+`)
+
+Multi-Turn:
+
+We explicitly fine-tune the base model to produce high-reward responses at the second attempt, while forcing the model to not change its first attempt by constraining it to be close to the base model using a KL-divergence.
+
+#mitex(`
+\max _\theta \mathbb{E}_{x_1, y_1 \sim \pi_\theta(\cdot \mid x), y_2 \sim \pi_\theta\left(\cdot \mid\left[x_1, p_1\right]\right)}\left[\widehat{r}\left(y_2, y^*\right)-\beta_2 D_{K L}\left(\pi_\theta\left(\cdot| | x_1\right)| | \pi_{\mathrm{ref}}\left(\cdot \mid x_1\right)\right)\right],
+`)
+#mitex(`
+\max _\theta \mathbb{E}\left[\sum_{i=1}^2 \widehat{r}\left(y_i, y^*\right)-\beta_1 D_{K L}\left(\pi_\theta\left(\cdot \mid x_i\right)| | \pi_{\mathrm{ref}}\left(\cdot \mid \boldsymbol{x}_i\right)\right)\right],
+`)
+
+=== #link("https://github.com/chufanchen/read-paper-and-code/issues/191")[Retroformer: Retrospective Large Language Agents with Policy Gradient Optimization]
 
 a. Actor Model is a frozen LLM to generate actions
 
@@ -97,11 +145,26 @@ c. Following the RLHF training procedures with PPO $r(x_(k,i),y_(k,i))=G_(k,i+1)
 
 === DigiRL: Training In-The-Wild Device-Control Agents with Autonomous Reinforcement Learning
 
-- Method: Offline RL + Offline-to-Online RL
+// - Method: Offline RL + Offline-to-Online RL
+- Motivation: 
+  1. It must make use of online interaction data since static demonstration data would not be representative of the task when the model is deployed:
+  2. Learning on-the-fly means the approach must learn from multi-turn interaction data from the model itself, a large of chunk of which would consist of failures. Proper mechanisms must be designed to automatically pick out the correct actions while filtering the wrong ones.
+- Method: 
+  1. Train instruction-level and step-level value function
+  2. Filter out trajectories and states using the value function then train the actor on the filtered data
+
+#figure(image("assets/digirl.jpeg"), caption: [DigiRL])
 
 === #link("https://github.com/chufanchen/read-paper-and-code/issues/225")[WebRL: Training LLM Web Agents via Self-Evolving Online Curriculum Reinforcement Learning]
+- Motivation: A typical challenge in training LLM web agents within WebArena is the scarcity of training tasks, resonating with the situation of developing real-world web agents
 
-- Method: ORM SFT Training + Curriculum RL
+#figure(image("assets/webrl.png", width: auto))
+- Method: 
+  1. ORM(Outcome Reward Model) SFT Training: produce binary reward signal for a given task
+  2. Self-evolving curriculum RL: Generate new instruction
+    1. During the generation step, we use the in-breadth evolving approach to create new instructions. We select instructions the model failed to complete in previous interaction phases as seeds for generating new instructions.
+    2. To ensure that the generated instructions are both feasible in the target environment and aligned with the desired difficulty level, we use the critic to evaluate each new instruction by considering its initial state. We select instructions with critic scores between 0.05 and 0.75, ensuring that only tasks meeting our difficulty criteria are retained
+
 
 === Fine-Tuning Large Vision-Language Models as Decision-Making Agents via Reinforcement Learning
 
@@ -114,21 +177,26 @@ c. Following the RLHF training procedures with PPO $r(x_(k,i),y_(k,i))=G_(k,i+1)
 === Interactive Dialogue Agents via Reinforcement Learning on Hindsight Regenerations
 
 - Motivation: Pretrained LLMs can be served as effective "human simulators" to aid in the training of dialogue agents. However, the effectiveness of this approach(e.g. offline RL) is limited by the quality of the dialogue data used for training.
+
+#figure(image("assets/hindsight.png", height: 70%), caption: [Hindsight Generation.])
+
 - Method:
   1. A hindsight controller $c_H$ that takes any completed dialogue as input, as well as a prefix of that dialogue, and proposes a different, more preferable action to take
   2. A forward model $hat(P)$ that simulates a hypothetical completed dialogue from any prefix
   3. A reward model $hat(r)$ to assign a reward for any completed dialogue
   4. An offline RL method for learning a policy from a static dataset of dialogues
 
-#figure(image("assets/hindsight.png", height: 70%), caption: [Hindsight Generation.])
-
 === AGILE: A Novel Reinforcement Learning Framework of LLM Agents
 
-LLM Agents 被定义为一个 token-level MDP（Markov Decision Process）。动作空间（Action space）由 LLM 的词表构成，LLM 生成的每一个 token 是一个动作，LLM 本身则作为 Agent 的策略模型（Policy model）。Agent 的状态（State）由 LLM 上下文和记忆组成。在每个时刻，LLM 预测动作，执行器根据预定义的逻辑完成状态转移，同时环境给予 Agent 相应的奖励（Reward）。
-
-- Method: Imitation learning + Reinforcement learning + Seek for advice
+- LLM Agents: token-level MDP
+- State: LLM context and memory
+- Action space: llm vocabulary
+- Policy: llm
 
 #figure(image("assets/AGILE.png", height: 70%), caption: [AGILE: A Framework unify LLM, memory, tools and executor.])
+
+Method: Imitation learning + Reinforcement learning + Seek for advice
+
 
 === Training Large Language Models for Reasoning through Reverse Curriculum Reinforcement Learning
 
@@ -142,14 +210,21 @@ Many of these problems require the agent to explicitly take the steps to gather 
 
 #figure(image("assets/multiturn.jpeg", height: 70%), caption: [Agents need multi-turn LLM fine-tuning.])
 
-- #link("https://github.com/chufanchen/read-paper-and-code/issues/193")[ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL]
+=== #link("https://github.com/chufanchen/read-paper-and-code/issues/193")[ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL]
 
+- Motivation: token-level or utterance-level RL is not sufficient for complex tasks that require multi-turn reasoning.
+  - Token-level methods face the challenge of an extremely long horizon (number of tokens per round * number of interactions), leading to numerical instabilities and slow convergence
+  - Utterance-level methods face the challenge of an exponential action space (exponential in the number of tokens per utterance), resulting in difficulty in optimizing over such large action space
 
+- Method: Hierarchical Multi-Turn RL
+  ArCHer for RL with language models can enjoy the best of both worlds, where an off-policy temporal difference learning method can train an utterance-level value function at the high level, and any policy gradient algorithm can optimize the token generation at each turn of the interaction at the low level, treating the high-level value function as the terminal reward for that turn. 
+
+#figure(image("assets/archer.jpeg", height: 70%), caption: [Actor-Critic Framework with a Hierarchical Structure.])
 == LLM Reasoning via Planning
 
 #figure(image("assets/RAP.png", height: 50%), caption: [Reasoning with Language Model is Planning with World Model.])
 
-#link("https://github.com/chufanchen/read-paper-and-code/issues/199")[Language Agent Tree Search Unifies Reasoning, Acting, and Planning in Language Models]
+=== #link("https://github.com/chufanchen/read-paper-and-code/issues/199")[Language Agent Tree Search Unifies Reasoning, Acting, and Planning in Language Models]
 
 // == Speculative Decoding
 
