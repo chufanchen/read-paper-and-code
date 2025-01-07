@@ -4,7 +4,7 @@
 #import "@preview/mitex:0.2.4": *
 #show: university-theme.with(aspect-ratio: "16-9")
 
-= 2025.1.3
+= 2025.1.4
 
 == LLMs for RL
 
@@ -78,12 +78,14 @@ Method:
 
 == Credit Assignment
 
-- #link("https://github.com/chufanchen/read-paper-and-code/issues/224")[Reinforcing LLM Agents via Policy Optimization with Action Decomposition]
+=== #link("https://github.com/chufanchen/read-paper-and-code/issues/224")[Reinforcing LLM Agents via Policy Optimization with Action Decomposition]
 
 RL agents where sampling actions from a policy means sampling a sequence of tokens mapping to an action from a (suitably conditioned) large language model. Since actions are typically described as a sequence of more than one token, this introduces issues around *credit assignment* between tokens contributing to an action.
 
 #figure(image("assets/POAD.png", height: 50%), caption: [#text(size: 20pt)[The necessity of aligning language agents with environments to
 exclude the wrong option, since the agent does not initially know that “coffee table is empty”; Action-level optimization is uncertain to what extent the key tokens]])
+
+Method: Token level Bellman Backup
 
 #mitex(`
 \begin{aligned}
@@ -97,11 +99,9 @@ R\left(o_t, a_t\right)+\gamma_a V_\pi\left(o_{t+1}, \emptyset\right), & \text { 
 `)
 
 
-
-
-Bias in value networks (used by PPO) impacts performance.
-
 === #link("https://github.com/chufanchen/read-paper-and-code/issues/216")[VinePPO: Unlocking RL Potential For LLM Reasoning Through Refined Credit Assignment]
+
+- Motivation: Bias in value networks (used by PPO) impacts performance.
 
 #mitex(`
 \hat{V}_{\mathrm{MC}}\left(s_t\right):=\frac{1}{K} \sum_{k=1}^K R\left(\tau^k\right), \quad \text { where } \tau^1, \ldots, \tau^K \sim \pi_\theta\left(\cdot \mid s_t\right) .
@@ -131,6 +131,9 @@ We explicitly fine-tune the base model to produce high-reward responses at the s
 \max _\theta \mathbb{E}\left[\sum_{i=1}^2 \widehat{r}\left(y_i, y^*\right)-\beta_1 D_{K L}\left(\pi_\theta\left(\cdot \mid x_i\right)| | \pi_{\mathrm{ref}}\left(\cdot \mid \boldsymbol{x}_i\right)\right)\right],
 `)
 
+
+=== Recursive Introspection: Teaching Language Model Agents How to Self-Improve
+
 === #link("https://github.com/chufanchen/read-paper-and-code/issues/191")[Retroformer: Retrospective Large Language Agents with Policy Gradient Optimization]
 
 a. Actor Model is a frozen LLM to generate actions
@@ -147,7 +150,7 @@ c. Following the RLHF training procedures with PPO $r(x_(k,i),y_(k,i))=G_(k,i+1)
 
 // - Method: Offline RL + Offline-to-Online RL
 - Motivation: 
-  1. It must make use of online interaction data since static demonstration data would not be representative of the task when the model is deployed:
+  1. It must make use of online interaction data since static demonstration data would not be representative of the task when the model is deployed.
   2. Learning on-the-fly means the approach must learn from multi-turn interaction data from the model itself, a large of chunk of which would consist of failures. Proper mechanisms must be designed to automatically pick out the correct actions while filtering the wrong ones.
 - Method: 
   1. Train instruction-level and step-level value function
@@ -225,6 +228,21 @@ Many of these problems require the agent to explicitly take the steps to gather 
   ArCHer for RL with language models can enjoy the best of both worlds, where an off-policy temporal difference learning method can train an *utterance-level value function* at the high level, and any policy gradient algorithm can optimize the token generation at each turn of the interaction at the low level, treating the high-level value function as the terminal reward for that turn. 
 
 #figure(image("assets/archer.jpeg", height: 70%), caption: [Actor-Critic Framework with a Hierarchical Structure.])
+
+=== Training Software Engineering Agents and Verifiers with SWE-Gym
+
+- Baseline:
+  - ArCHer
+  - Language IQL
+
+=== RL on Incorrect Synthetic Data Scales the Efficiency of LLM Math Reasoning by Eight-Fold
+
+使用负样本训练可以提高模型性能并帮助避免虚假关联，并证明它等同于使用每步优势加权强化学习 (RL) 进行训练
+
+=== Reflexion: Language Agents with Verbal Reinforcement Learning
+
+#figure(image("assets/reflexion.png", height: 90%))
+
 == LLM Reasoning via Planning
 
 === #link("https://github.com/chufanchen/read-paper-and-code/issues/199")[Language Agent Tree Search Unifies Reasoning, Acting, and Planning in Language Models]
@@ -240,9 +258,10 @@ Method:
 - 环境反馈：环境提供的反馈用于评估行动的价值，以及生成自我反思。
 - 自我反思：LLM生成的自我反思用于指导未来的搜索，帮助优化决策过程。
 
+== Misc
 
-
-
+- Aviral Kumar
+- Sergey Levine
 // == Speculative Decoding
 
 // #figure(image("assets/spec.png", height: 40%), caption: [Draft-then-Verify.])
