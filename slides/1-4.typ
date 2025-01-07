@@ -107,8 +107,11 @@ R\left(o_t, a_t\right)+\gamma_a V_\pi\left(o_{t+1}, \emptyset\right), & \text { 
 \hat{V}_{\mathrm{MC}}\left(s_t\right):=\frac{1}{K} \sum_{k=1}^K R\left(\tau^k\right), \quad \text { where } \tau^1, \ldots, \tau^K \sim \pi_\theta\left(\cdot \mid s_t\right) .
 `)
 
-
 == Self Correction
+
+=== Reflexion: Language Agents with Verbal Reinforcement Learning
+
+#figure(image("assets/reflexion.png", height: 90%))
 
 === #link("https://github.com/chufanchen/read-paper-and-code/issues/222")[Training Language Models to Self-Correct via Reinforcement Learning]
 
@@ -239,10 +242,32 @@ Many of these problems require the agent to explicitly take the steps to gather 
 
 使用负样本训练可以提高模型性能并帮助避免虚假关联，并证明它等同于使用每步优势加权强化学习 (RL) 进行训练
 
-=== Reflexion: Language Agents with Verbal Reinforcement Learning
+=== Proposer-Agent-Evaluator(PAE): Autonomous Skill Discovery For Foundation Model Internet Agents
 
-#figure(image("assets/reflexion.png", height: 90%))
+- Method:
+  - Context-aware task proposer: in order to generate a diverse set of feasible tasks, we frame task proposing as a *conditional auto-regressive* generation based on the context information of the websites. 
+  - Image-based outcome evaluator: take full advantage of SOTA *VLMs*
+  - Chain-of-thought agent policy: to enable generalization to unseen evaluation tasks, we incorporate an additional *reasoning step* to outputs the agent's chain-of-thought before the actual web operation
 
+
+#figure(image("assets/PAE.jpeg", height: 80%))
+
+=== Aligning Large Language Models with Representation Editing: A Control Perspective
+
+Abstract: Aligning large language models (LLMs) with human objectives is crucial for
+real-world applications. However, fine-tuning LLMs for alignment often suffers
+from unstable training and requires substantial computing resources. Test-time
+alignment techniques, such as prompting and guided decoding, do not modify
+the underlying model, and their performance remains dependent on the original
+model’s capabilities. To address these challenges, we propose aligning LLMs
+through *representation editing*. The core of our method is to view a pre-trained
+autoregressive LLM as a *discrete-time stochastic dynamical system*. To achieve
+alignment for specific objectives, we introduce external control signals into the
+state space of this language dynamical system. We train a value function directly
+on the hidden states according to the Bellman equation, enabling gradient-based
+optimization to obtain the optimal control signals at test time. Our experiments
+demonstrate that our method outperforms existing test-time alignment techniques
+while requiring significantly fewer resources compared to fine-tuning methods.
 == LLM Reasoning via Planning
 
 === #link("https://github.com/chufanchen/read-paper-and-code/issues/199")[Language Agent Tree Search Unifies Reasoning, Acting, and Planning in Language Models]
@@ -259,9 +284,13 @@ Method:
 - 自我反思：LLM生成的自我反思用于指导未来的搜索，帮助优化决策过程。
 
 == Misc
+可以关注以下两个作者的工作：
 
 - Aviral Kumar
 - Sergey Levine
+
+
+
 // == Speculative Decoding
 
 // #figure(image("assets/spec.png", height: 40%), caption: [Draft-then-Verify.])
